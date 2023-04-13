@@ -54,12 +54,14 @@ if not os.path.exists(Path + '\config\libraryfolders.vdf'):
 	input('请按任意键退出')
 	exit()
 vdfText = vdf.parse(open(Path + '\config\libraryfolders.vdf'))
+print("正在读取Steam本地库")
 #print(vdfText)
 for i in vdfText['libraryfolders']:
 	for id in vdfText['libraryfolders'][str(i)]['apps']:
 		appid = int(id)
 		if(appid != 228980):
 			app_info_url = "http://api.steamcmd.net/v1/info/"+str(appid)
+			print("正在获取信息，appid:"+str(appid))
 			apps_info_data = requests.get(app_info_url)
 			times = 0
 			while apps_info_data.status_code!=200 or times<4:
