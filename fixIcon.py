@@ -10,7 +10,6 @@ from time import sleep
 #	BiliBili：鑫说数境	https://space.bilibili.com/24915794
 #		My Blog:	https://blog.ddxnb.cn
 # ***************************************************************
-
 def read_reg(ep, p = r"", k = ''):
     try:
         key = winreg.OpenKeyEx(ep, p)
@@ -21,7 +20,8 @@ def read_reg(ep, p = r"", k = ''):
     except Exception as e:
         return None
     return None
-    
+
+requests.packages.urllib3.util.connection.HAS_IPV6 = False
 print("本脚本由newton_miku制作")
 print("Powered by newton_miku")
 print("Github:newton_miku	https://github.com/newton-miku")
@@ -64,9 +64,10 @@ for i in vdfText['libraryfolders']:
 			print("正在获取信息，appid:"+str(appid))
 			apps_info_data = requests.get(app_info_url)
 			times = 0
-			while apps_info_data.status_code!=200 or times<4:
-				apps_info_data = requests.get(app_info_url)
+			while apps_info_data.status_code!=200 and times<4:
 				times += 1
+				print("获取失败，正在重试，次数"+times)
+				apps_info_data = requests.get(app_info_url)
 			if apps_info_data.status_code!=200:
 				print("无法获取到appid："+str(appid)+"的图标名(已重试3次)，跳过当前应用")
 				sleep(0.3)#增加等待时间，避免频繁请求导致的拒绝
