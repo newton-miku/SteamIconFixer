@@ -66,6 +66,9 @@ for i in vdfText['libraryfolders']:
 		if(appid != 228980):
 			apps_info = client.get_product_info(apps=[appid, ])
 			#print(apps_info['apps'][appid]['common'])
+			if apps_info['apps']["_missing_token"]:
+				print("该应用要求鉴权token，将跳过，appid：" + str(appid))
+				continue
 			pic_name = apps_info['apps'][appid]['common']['clienticon'] #设置文件夹的名字
 			url = "http://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/"+str(appid) + "/" + str(pic_name) + ".ico"#拼接网址
 			print(url)
