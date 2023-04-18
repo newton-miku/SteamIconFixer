@@ -74,10 +74,10 @@ for i in vdfText['libraryfolders']:
 					print(Fore.RED + "无法获取到appid："+str(appid)+"的图标名(已重试3次)，跳过当前应用")
 					sleep(0.3)#增加等待时间，避免频繁请求导致的拒绝
 					continue
-			apps_info = apps_info_data.json()
-			if apps_info['data'][str(appid)]["_missing_token"]:
-				print(Fore.RED + "该应用要求鉴权token，将跳过，appid：" + str(appid))
-				continue
+				apps_info = apps_info_data.json()
+				if apps_info['data'][str(appid)]["_missing_token"]:
+					print(Fore.RED + "该应用要求鉴权token，将跳过，appid：" + str(appid))
+					continue
 				common = apps_info['data'][str(appid)]['common']
 				pic_name = common['clienticon'] #设置文件夹的名字
 				url = "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/"+str(appid) + "/" + str(pic_name) + ".ico"#拼接网址
