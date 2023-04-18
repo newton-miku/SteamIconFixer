@@ -74,35 +74,34 @@ for i in vdfText['libraryfolders']:
 					print(Fore.RED + "无法获取到appid："+str(appid)+"的图标名(已重试3次)，跳过当前应用")
 					sleep(0.3)#增加等待时间，避免频繁请求导致的拒绝
 					continue
-			except Exception as e:
-					print(Fore.RED + '发生错误，错误类型是',e.__class__.__name__)
-					print(Fore.RED + '错误明细是',e)
 			apps_info = apps_info_data.json()
 			if apps_info['data'][str(appid)]["_missing_token"]:
 				print(Fore.RED + "该应用要求鉴权token，将跳过，appid：" + str(appid))
 				continue
-			common = apps_info['data'][str(appid)]['common']
-			pic_name = common['clienticon'] #设置文件夹的名字
-			url = "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/"+str(appid) + "/" + str(pic_name) + ".ico"#拼接网址
-			
-			if 'name_localized' in common:
-				if 'schinese' in common['name_localized']:
-					app_name = common['name_localized']['schinese']
-				elif 'tchinese' in common['name_localized']['tchinese']:
-					app_name = common['name_localized']['tchinese']
+				common = apps_info['data'][str(appid)]['common']
+				pic_name = common['clienticon'] #设置文件夹的名字
+				url = "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/"+str(appid) + "/" + str(pic_name) + ".ico"#拼接网址
+				if 'name_localized' in common:
+					if 'schinese' in common['name_localized']:
+						app_name = common['name_localized']['schinese']
+					elif 'tchinese' in common['name_localized']['tchinese']:
+						app_name = common['name_localized']['tchinese']
+					else:
+						app_name = common['name']
 				else:
 					app_name = common['name']
-			else:
-				app_name = common['name']
 				
-			if os.path.exists(str(Path + "\steam\games\/" + pic_name)+".ico"):
-				print(Fore.YELLOW + app_name+" 的图标已存在")
-				sleep(0.3)#增加等待时间，避免频繁请求导致的拒绝
-				continue
-			print("正在下载 "+app_name+" 的图标")
-			r = requests.get(url)#下载图片
-			# 写入图片
-			with open(str(Path + "\steam\games\/" + pic_name)+".ico", "wb") as f:
-				f.write(r.content)
-				f.close()
+				if os.path.exists(str(Path + "\steam\games\/" + pic_name)+".ico"):
+					print(Fore.YELLOW + app_name+" 的图标已存在")
+					sleep(0.3)#增加等待时间，避免频繁请求导致的拒绝
+					continue
+				print("正在下载 "+app_name+" 的图标")
+				r = requests.get(url)#下载图片
+				# 写入图片
+				with open(str(Path + "\steam\games\/" + pic_name)+".ico", "wb") as f:
+					f.write(r.content)
+					f.close()
+			except Exception as e:
+				print(Fore.RED + '发生错误，错误类型是',e.__class__.__name__)
+				print(Fore.RED + '错误明细是',e)
 input('请按任意键退出')
