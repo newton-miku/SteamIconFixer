@@ -9,7 +9,7 @@ Automatically fix the issue with Steam icon display, relying on reading the Wind
 
 ### 如何使用（How to Use）
 
-点击页面右侧的Release，下载最新版本打开即可
+点击页面右侧的[Release](https://github.com/newton-miku/SteamIconFixer/releases/latest)，下载最新版本打开即可
 
 如果您的设备具有python环境，也可使用下面的代码运行
 
