@@ -12,7 +12,7 @@ jobs:
         uses: sayyid5416/pyinstaller@v1
         with:
           python_ver: '3.8.10'
-          spec: 'fixIcon.py'
-          requirements: 'requirements.txt'
+          spec: 'src/fixIcon.py'
+          requirements: 'src/requirements.txt'
           upload_exe_with_name: 'fixIcon'
           options: --onefile, --name "fixIcon",
