@@ -17,8 +17,8 @@ jobs:
         upload_exe_with_name: 'fixIcon'
         options: --onefile,
     - name: Upload to release
-      uses: JasonEtco/upload-to-release@master
+      uses: xresloader/upload-to-github-release@v1
       with:
-        args: dist\fixIcon.exe
+        file: dist\fixIcon.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
