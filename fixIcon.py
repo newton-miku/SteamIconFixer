@@ -61,8 +61,9 @@ for i in vdfText['libraryfolders']:
 	for id in vdfText['libraryfolders'][str(i)]['apps']:
 		appid = int(id)
 		if(appid != 228980):
-			app_info_url = "http://steamapi.ddxnb.cn/v1/info/"+str(appid)
-			#app_info_url = "https://api.steamcmd.net/v1/info/"+str(appid)
+			app_info_url = "http://steam.ddxnb.cn/v1/info/"+str(appid)			#cloudflare的worker
+			#app_info_url = "http://steamapi.ddxnb.cn/v1/info/"+str(appid)		#我的香港服务器
+			#app_info_url = "https://api.steamcmd.net/v1/info/"+str(appid)		#源地址
 			print("正在获取信息，appid:"+str(appid))
 			try:
 				apps_info_data = requests.get(app_info_url)			
