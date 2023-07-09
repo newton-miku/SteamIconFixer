@@ -16,3 +16,9 @@ jobs:
         requirements: requirements.txt
         upload_exe_with_name: 'fixIcon'
         options: --onefile,
+    - name: Upload to release
+      uses: JasonEtco/upload-to-release@master
+      with:
+        args: dist\fixIcon.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
