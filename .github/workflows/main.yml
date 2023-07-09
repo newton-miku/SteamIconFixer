@@ -20,5 +20,7 @@ jobs:
       uses: xresloader/upload-to-github-release@v1
       with:
         file: dist\fixIcon.exe
+        update_latest_release: true
+        draft: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
