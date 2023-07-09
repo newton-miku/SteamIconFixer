@@ -15,3 +15,4 @@ jobs:
         spec: fixIcon.py
         requirements: requirements.txt
         upload_exe_with_name: 'fixIcon'
+        options: --onefile,
