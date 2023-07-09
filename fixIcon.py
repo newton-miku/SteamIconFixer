@@ -27,7 +27,7 @@ init(autoreset=True)
 print(Fore.GREEN + "本脚本由newton_miku制作")
 print(Fore.GREEN + "Powered by newton_miku")
 print(Fore.GREEN + "Github:newton_miku	https://github.com/newton-miku")
-print(Fore.GREEN + "B站：鑫说数境		https://space.bilibili.com/24915794")
+print(Fore.GREEN + "B站：Sin说数境		https://space.bilibili.com/24915794")
 print(Fore.GREEN + "博客地址：https://blog.ddxnb.cn\n")
 #版权信息
 
@@ -61,7 +61,8 @@ for i in vdfText['libraryfolders']:
 	for id in vdfText['libraryfolders'][str(i)]['apps']:
 		appid = int(id)
 		if(appid != 228980):
-			app_info_url = "http://api.steamcmd.net/v1/info/"+str(appid)
+			app_info_url = "http://steamapi.ddxnb.cn/v1/info/"+str(appid)
+			#app_info_url = "https://api.steamcmd.net/v1/info/"+str(appid)
 			print("正在获取信息，appid:"+str(appid))
 			try:
 				apps_info_data = requests.get(app_info_url)			
