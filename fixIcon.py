@@ -22,7 +22,7 @@ def read_reg(ep, p = r"", k = ''):
         return None
     return None
 
-requests.packages.urllib3.util.connection.HAS_IPV6 = False
+#requests.packages.urllib3.util.connection.HAS_IPV6 = False
 init(autoreset=True)
 print(Fore.GREEN + "本脚本由newton_miku制作")
 print(Fore.GREEN + "Powered by newton_miku")
@@ -61,49 +61,45 @@ for i in vdfText['libraryfolders']:
 	for id in vdfText['libraryfolders'][str(i)]['apps']:
 		appid = int(id)
 		if(appid != 228980):
-			app_info_url = "http://steam.ddxnb.cn/v1/info/"+str(appid)			#cloudflare的worker
-			#app_info_url = "http://steamapi.ddxnb.cn/v1/info/"+str(appid)		#我的香港服务器
-			#app_info_url = "https://api.steamcmd.net/v1/info/"+str(appid)		#源地址
-			print("正在获取信息，appid:"+str(appid))
+			app_info_url = f"http://steama.ddxnb.cn/v1/info/{appid}"			#gcore的CDN
+			#app_info_url = f"http://steam.ddxnb.cn/v1/info/{appid}"			#cloudflare的worker
+			#app_info_url = f"http://steamapi.ddxnb.cn/v1/info/{appid}"			#我的香港服务器
+			#app_info_url = f"https://api.steamcmd.net/v1/info/{appid}"			#源地址
+			print(f"正在获取信息，appid:{appid}",end="\r")
 			try:
 				apps_info_data = requests.get(app_info_url)			
 				times = 0
-				while apps_info_data.status_code!=200 and times<4:
+				while apps_info_data.status_code != 200 and times<3:
 					times += 1
-					print(Fore.YELLOW + "获取失败，正在重试，次数"+times)
+					print(Fore.YELLOW + f"获取失败，正在重试，次数{times}", end="\r")
 					apps_info_data = requests.get(app_info_url)
 				if apps_info_data.status_code!=200:
-					print(Fore.RED + "无法获取到appid："+str(appid)+"的图标名(已重试3次)，跳过当前应用")
+					print(Fore.RED + f"无法获取到appid：{appid}的图标名(已重试{times}次)，跳过当前应用")
+					print(Fore.RED + f"错误代码{apps_info_data.status_code} {apps_info_data.reason}")
 					sleep(0.3)#增加等待时间，避免频繁请求导致的拒绝
 					continue
 				apps_info = apps_info_data.json()
 				if apps_info['data'][str(appid)]["_missing_token"]:
-					print(Fore.RED + "该应用要求鉴权token，将跳过，appid：" + str(appid))
+					print(Fore.RED + f"该应用要求鉴权token，将跳过，appid：{appid}")
 					continue
 				common = apps_info['data'][str(appid)]['common']
 				pic_name = common['clienticon'] #设置文件夹的名字
-				url = "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/"+str(appid) + "/" + str(pic_name) + ".ico"#拼接网址
-				if 'name_localized' in common:
-					if 'schinese' in common['name_localized']:
-						app_name = common['name_localized']['schinese']
-					elif 'tchinese' in common['name_localized']['tchinese']:
-						app_name = common['name_localized']['tchinese']
-					else:
-						app_name = common['name']
-				else:
-					app_name = common['name']
+				url = f"http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/{appid}/{pic_name}.ico"#拼接网址
+				app_name = common.get('name_localized', {}).get('schinese') or common.get('name_localized', {}).get('tchinese') or common.get('name', '')
+
 				
-				if os.path.exists(str(Path + "\steam\games\/" + pic_name)+".ico"):
-					print(Fore.YELLOW + app_name+" 的图标已存在")
+				if os.path.exists(f"{Path}\\steam\\games\\{pic_name}.ico"):
+					print(Fore.LIGHTGREEN_EX + f"{app_name}"+Fore.YELLOW+f" 的图标已存在，appid：{appid}")
 					sleep(0.3)#增加等待时间，避免频繁请求导致的拒绝
 					continue
-				print("正在下载 "+app_name+" 的图标")
+				print(f"正在下载 {app_name} 的图标")
 				r = requests.get(url)#下载图片
 				# 写入图片
-				with open(str(Path + "\steam\games\/" + pic_name)+".ico", "wb") as f:
+				with open(f"{Path}\\steam\\games\\{pic_name}.ico", "wb") as f:
 					f.write(r.content)
 					f.close()
 			except Exception as e:
 				print(Fore.RED + '发生错误，错误类型是',e.__class__.__name__)
 				print(Fore.RED + '错误明细是',e)
+				print(traceback.print_exc())
 input('请按任意键退出')
