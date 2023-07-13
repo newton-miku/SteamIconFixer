@@ -10,16 +10,23 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Pyinstaller build
-      uses: sayyid5416/pyinstaller@v1
+      uses: sayyid5416/pyinstaller@v1.2.1
       with:
         spec: fixIcon.py
         requirements: requirements.txt
         upload_exe_with_name: 'fixIcon'
         options: --onefile,
-    - name: Upload to release
-      uses: xresloader/upload-to-github-release@v1
+    - name: Pyinstaller build V2
+      uses: sayyid5416/pyinstaller@v1.2.1
       with:
-        file: dist\fixIcon.exe
+        spec: FastFixIcon.py
+        requirements: requirements.txt
+        upload_exe_with_name: 'FastFixIcon'
+        options: --onefile,
+    - name: Upload to release
+      uses: xresloader/upload-to-github-release@v1.3.12
+      with:
+        file: dist\*.exe
         update_latest_release: true
         draft: false
       env:
