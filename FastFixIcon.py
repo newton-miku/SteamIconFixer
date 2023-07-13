@@ -3,7 +3,7 @@ from time import sleep
 import vdf
 from colorama import Fore, Style, init
 from fastest_request import get_fastest_result
-import asyncio
+import asyncio,aiohttp
 
 init(autoreset=True)
 print(Fore.GREEN + "本脚本由newton_miku制作")
