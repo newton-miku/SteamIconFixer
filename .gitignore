@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+*.spec
+.venv/
+venv/
+.pytest_cache/
+*.part
+
+# 崩溃日志写在程序所在目录，属于本机运行产物
+crash-*.log
+console.log
