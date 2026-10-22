@@ -2,11 +2,13 @@
 """steam_utils 的离线单元测试（不访问网络、不依赖 Steam 安装）。"""
 from __future__ import annotations
 
+import io
 import os
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -232,6 +234,27 @@ class GuardTests(unittest.TestCase):
         os.environ[su.NO_PAUSE_ENV] = "1"
         self.addCleanup(os.environ.pop, su.NO_PAUSE_ENV, None)
         su.pause_if_interactive(force=True)  # 不该阻塞，也不该抛异常
+
+    def _narrow_stdout(self):
+        """把 stdout 换成只认 cp1252 的流，模拟非中文代码页/输出被重定向。"""
+        buf = io.BytesIO()
+        stream = io.TextIOWrapper(buf, encoding="cp1252", errors="strict", line_buffering=True)
+        patcher = mock.patch.object(su.sys, "stdout", stream)
+        patcher.start()
+        self.addCleanup(stream.detach)
+        self.addCleanup(patcher.stop)
+        return buf
+
+    def test_emit_survives_narrow_encoding(self):
+        buf = self._narrow_stdout()
+        su.emit("缺少依赖：vdf")  # 不能抛 UnicodeEncodeError
+        su.sys.stdout.flush()
+        self.assertTrue(buf.getvalue())
+
+    def test_fatal_survives_narrow_stream(self):
+        self._narrow_stdout()
+        self.assertEqual(su.fatal("无法获取到 Steam 安装路径"), 1)
+        self.assertTrue(list(Path(self._tmp.name).glob("crash-*.log")))
 
 
 if __name__ == "__main__":

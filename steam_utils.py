@@ -22,7 +22,7 @@ import tempfile
 import time
 import traceback
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Sequence, TextIO, Tuple
 
 try:  # 允许在非 Windows 上导入（单测用），实际功能只在 Windows 上可用
     import winreg  # type: ignore[import-not-found]
@@ -541,6 +541,31 @@ def setup_console() -> None:
             pass
 
 
+def emit(text: str = "", end: str = "\n", stream: Optional[TextIO] = None) -> None:
+    """按输出流自身的编码写文本。
+
+    Windows 上被重定向到文件、或跑在非中文代码页的机器里时，直接 print 中文会
+    抛 UnicodeEncodeError，最外层兜底自己也炸掉就没法给用户看原因了。
+    这里编不出来的字符一律降级成占位符，保证提示一定能显示出来。
+    """
+    target = stream if stream is not None else sys.stdout
+    if target is None:
+        return
+    payload = text + end
+    try:
+        target.write(payload)
+        return
+    except UnicodeEncodeError:
+        pass
+    except (ValueError, OSError):  # pragma: no cover - 流已关闭
+        return
+    encoding = getattr(target, "encoding", None) or "utf-8"
+    try:
+        target.write(payload.encode(encoding, "replace").decode(encoding, "replace"))
+    except (UnicodeEncodeError, ValueError, OSError):  # pragma: no cover
+        pass
+
+
 def _flush_streams() -> None:
     for stream in (sys.stdout, sys.stderr):
         flush = getattr(stream, "flush", None)
@@ -571,9 +596,9 @@ def pause_if_interactive(force: bool = False) -> None:
         if os.name == "nt":  # pragma: no cover - 仅 Windows
             import msvcrt
 
-            print("请按任意键退出…", end=" ", flush=True)
+            emit("请按任意键退出…", end=" ")
             msvcrt.getwch()
-            print()
+            emit()
             return
     except Exception:  # pragma: no cover
         pass
@@ -591,13 +616,13 @@ def fatal(
     hint: Optional[str] = None,
 ) -> int:
     """打印可读错误 + 落盘详细日志，返回退出码 1。"""
-    print(Fore.RED + message + Style.RESET_ALL)
+    emit(Fore.RED + message + Style.RESET_ALL)
     if hint:
-        print(hint)
+        emit(hint)
     path = log_exception(exc, title=message)
     if path is not None:
-        print(Fore.YELLOW + "详细日志已保存：" + str(path))
-        print("反馈问题时可把这个文件发给作者。")
+        emit(Fore.YELLOW + "详细日志已保存：" + str(path))
+        emit("反馈问题时可把这个文件发给作者。")
     return 1
 
 
@@ -619,7 +644,7 @@ def run_guarded(func: Callable[[], int], pause: bool = True) -> int:
         result = func()
         code = int(result or 0)
     except KeyboardInterrupt:
-        print(Fore.YELLOW + "\n已中断")
+        emit(Fore.YELLOW + "\n已中断")
         code = 130
     except SteamError as exc:
         code = fatal(str(exc), exc=exc)
